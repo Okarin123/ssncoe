@@ -219,9 +219,8 @@ public class login extends javax.swing.JFrame {
                     
                 if (actualPassword.equals(this.password)){ 
                     this.dispose();  
-                    //CREATE CLASS STUDENT
-                    //Student stud = new Student(); 
-                    //stud.setVisible(true);
+                    Student stud = new Student(this.username);  
+                    stud.setVisible(true);
                 } 
                 else{
                     throw new Exception(); 

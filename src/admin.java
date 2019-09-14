@@ -149,7 +149,7 @@ public class admin extends javax.swing.JFrame {
                     att = rs.getFloat("Attendance_Percentage");  
                     
                     if (att>=75){ 
-                        updateQuery = "update studentDetails set updates='Hallticket ready.' where studentID = " + "'" + studentID +"'";
+                        updateQuery = "update studentDetails set updates='Hallticket ready' where studentID = " + "'" + studentID +"'";
                         try{
                             PreparedStatement innerSt = conn.prepareStatement(updateQuery); 
                             innerSt.executeUpdate(); 
