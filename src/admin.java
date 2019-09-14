@@ -1,3 +1,11 @@
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -13,8 +21,17 @@ public class admin extends javax.swing.JFrame {
     /**
      * Creates new form admin
      */
+    private Connection conn; 
     public admin() {
         initComponents();
+        try
+        {
+            Class.forName("com.mysql.jdbc.Driver");
+            // The credentials for the mysql account will differ
+            this.conn =(Connection)DriverManager.getConnection("jdbc:mysql://localhost:3306/ssncoe","root","Thewilltoact");
+            //JOptionPane.showMessageDialog(this,"Connected to database!");
+        }
+        catch(ClassNotFoundException | SQLException e){System.out.println(e);}
     }
 
     /**
@@ -37,10 +54,25 @@ public class admin extends javax.swing.JFrame {
         jLabel1.setText("ADMIN DASHBOARD");
 
         jToggleButton1.setText("ADD FACULTY");
+        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton1ActionPerformed(evt);
+            }
+        });
 
         jToggleButton2.setText("GENERATE HALLTICKET");
+        jToggleButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton2ActionPerformed(evt);
+            }
+        });
 
         jToggleButton3.setText("PUBLISH RESULT");
+        jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton3ActionPerformed(evt);
+            }
+        });
 
         jToggleButton4.setText("LOG OUT");
         jToggleButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -91,8 +123,108 @@ public class admin extends javax.swing.JFrame {
 
     private void jToggleButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton4ActionPerformed
         // TODO add your handling code here:
-        System.exit(0);
+        this.dispose();
+        login page; 
+        try {
+            page = new login();
+            page.setVisible(true); 
+        } catch (SQLException ex) {
+            Logger.getLogger(admin.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }//GEN-LAST:event_jToggleButton4ActionPerformed
+
+    private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
+        // TODO add your handling code here:
+        if (jToggleButton2.isSelected()) { 
+            
+            String query = "select * from Attendance"; 
+            String studentID, updateQuery; 
+            float att; 
+            try { 
+                PreparedStatement st = conn.prepareStatement(query); 
+                ResultSet rs = st.executeQuery();      
+                
+                while (rs.next()){
+                    studentID = rs.getString("studentID");
+                    att = rs.getFloat("Attendance_Percentage");  
+                    
+                    if (att>=75){ 
+                        updateQuery = "update studentDetails set updates='Hallticket ready.' where studentID = " + "'" + studentID +"'";
+                        try{
+                            PreparedStatement innerSt = conn.prepareStatement(updateQuery); 
+                            innerSt.executeUpdate(); 
+                        }
+                        catch (SQLException e) {
+                            System.out.println(e); 
+                        }
+                    } 
+                    else {
+                        updateQuery = "update studentDetails set updates='Hallticket NOT generated.' where studentID = " + "'" + studentID +"'";
+                        try{
+                            PreparedStatement innerSt = conn.prepareStatement(updateQuery); 
+                            innerSt.executeUpdate(); 
+                        }
+                        catch (SQLException e) {
+                            System.out.println(e); 
+                        }
+                    }
+                }
+                JOptionPane.showMessageDialog(this, "Generated halltickets!"); 
+            }
+            catch(Exception e) { 
+                JOptionPane.showMessageDialog(this, e); 
+            }
+        }  
+        else 
+            JOptionPane.showMessageDialog(this,"Already generated halltickets!");
+    }//GEN-LAST:event_jToggleButton2ActionPerformed
+
+    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jToggleButton1ActionPerformed
+
+    private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
+        // TODO add your handling code here:
+        String query = "select * from Grades"; 
+        String studentID,remarks; 
+        String updateQuery = null; 
+        
+        if (jToggleButton3.isSelected() && jToggleButton2.isSelected()){ 
+        
+            try{ 
+                PreparedStatement st = conn.prepareStatement(query); 
+                ResultSet rs = st.executeQuery();
+            
+                while (rs.next()){ 
+                    studentID = rs.getString("studentID");
+                    remarks = rs.getString("remarks"); 
+                    
+                    System.out.println(remarks);
+                
+                    try{ 
+                    if (!remarks.equals("All OK")) 
+                        updateQuery = "update studentDetails set updates = 'results withheld' where studentID = " + "'" + studentID + "'";
+                    else
+                        updateQuery = "update studentDetails set updates = 'results published' where studentID = " + "'" + studentID + "'";
+                    } 
+                    catch(NullPointerException e){
+                        updateQuery = "update studentDetails set updates = 'results withheld' where studentID = " + "'" + studentID + "'";
+                    }  
+                    try{ 
+                        PreparedStatement innerSt = conn.prepareStatement(updateQuery);
+                        innerSt.executeUpdate();
+                    }
+                    catch(SQLException e){JOptionPane.showMessageDialog(this, e);} 
+                    
+                }
+            }
+            catch (SQLException e){JOptionPane.showMessageDialog(this,e);}
+            
+            JOptionPane.showMessageDialog(this,"Results published!"); 
+        } 
+        else 
+            JOptionPane.showMessageDialog(this, "Cannot publish!"); 
+    }//GEN-LAST:event_jToggleButton3ActionPerformed
 
     /**
      * @param args the command line arguments
