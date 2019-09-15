@@ -1,7 +1,16 @@
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 //import static javafx.application.Platform.exit;
 
 /*
@@ -20,9 +29,36 @@ public class faculty extends javax.swing.JFrame {
     /**
      * Creates new form faculty
      */
-    public faculty() {
+    private Map<String,String> classCourse = new HashMap();   
+    private Connection conn; 
+    private String facultyID;
+    
+    public faculty(String ID) {
         initComponents();
-    }
+        this.facultyID = ID; 
+        try
+        {
+            Class.forName("com.mysql.jdbc.Driver");
+            // The credentials for the mysql account will differ
+            this.conn =(Connection)DriverManager.getConnection("jdbc:mysql://localhost:3306/ssncoe","root","Thewilltoact");
+        }
+        catch(ClassNotFoundException | SQLException e){System.out.println(e);}
+        
+        //Let's store the classes this teacher teaches
+        try{ 
+            String query = "select * from courseTaughtBy where facultyID = " + "'" + this.facultyID + "'"; 
+            PreparedStatement st = conn.prepareStatement(query); 
+            ResultSet rs = st.executeQuery(); 
+            
+            String batch,course;           
+            while (rs.next()){ 
+                batch = rs.getString("Class"); 
+                course = rs.getString("courseName");
+                classCourse.put(batch,course); 
+            }
+        }
+        catch(SQLException e){JOptionPane.showMessageDialog(this,e);}
+     } 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -51,6 +87,11 @@ public class faculty extends javax.swing.JFrame {
         });
 
         jButton2.setText("UPLOAD ATTENDENCE");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("UPLOAD GRADES");
 
@@ -75,7 +116,7 @@ public class faculty extends javax.swing.JFrame {
                         .addGap(22, 22, 22)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 145, Short.MAX_VALUE)
                             .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(172, 172, 172)
@@ -118,6 +159,13 @@ public class faculty extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+        //UploadAtt uploader = UploadAtt(); 
+        //uploader.setVisible(true); 
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -147,7 +195,7 @@ public class faculty extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new faculty().setVisible(true);
+            new faculty(args[1]).setVisible(true);
         });
     }
 

@@ -152,7 +152,7 @@ public class login extends javax.swing.JFrame {
         // TODO add your handling code here:
       String ch = (String)comboone.getSelectedItem();
       String actualPassword="";                      
-        if("FACULTY".equals(ch)) 
+      if("FACULTY".equals(ch)) 
         {
             this.username = jTextField1.getText(); 
             this.password = jPasswordField1.getText(); 
@@ -164,9 +164,9 @@ public class login extends javax.swing.JFrame {
                 while(rs.next()) 
                     actualPassword = rs.getString("Password"); 
                 
-                if (actualPassword.equals(this.password)){ 
+                if (actualPassword.equals(this.password) && !actualPassword.equals("")){ 
                     this.dispose();  
-                    faculty  fac = new faculty();
+                    faculty  fac = new faculty(this.username);
                     fac.setVisible(true);
                 } 
                 else{
@@ -191,7 +191,7 @@ public class login extends javax.swing.JFrame {
                 while(rs.next())
                     actualPassword = rs.getString("Password"); 
 
-                if (actualPassword.equals(this.password)){ 
+                if (actualPassword.equals(this.password) && !actualPassword.equals("")){ 
                     this.dispose();  
                     admin adm = new admin();
                     adm.setVisible(true);
@@ -217,7 +217,7 @@ public class login extends javax.swing.JFrame {
                 while(rs.next()) 
                     actualPassword = rs.getString("Password"); 
                     
-                if (actualPassword.equals(this.password)){ 
+                if (actualPassword.equals(this.password) && !actualPassword.equals("")){ 
                     this.dispose();  
                     Student stud = new Student(this.username);  
                     stud.setVisible(true);
