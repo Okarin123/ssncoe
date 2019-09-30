@@ -42,9 +42,9 @@ public class login extends javax.swing.JFrame {
             Class.forName("com.mysql.jdbc.Driver");
             // The credentials for the mysql account will differ
             this.conn =(Connection)DriverManager.getConnection("jdbc:mysql://localhost:3306/ssncoe","root","Thewilltoact");
-            JOptionPane.showMessageDialog(this,"Connected to database!");
+            //JOptionPane.showMessageDialog(this,"Connected to database!");
         }
-        catch(ClassNotFoundException e){System.out.println(e);}
+        catch(ClassNotFoundException | SQLException e){System.out.println(e);}
     }
 
     /**
@@ -175,7 +175,7 @@ public class login extends javax.swing.JFrame {
                 
             }
             catch(Exception e){ 
-                JOptionPane.showMessageDialog(this,"Login failed!");
+                JOptionPane.showMessageDialog(this,"Login Failed!");
             }
                         
         }
