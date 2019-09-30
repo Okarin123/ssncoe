@@ -63,10 +63,13 @@ public class Student extends javax.swing.JFrame {
                 
                 try{ 
                     this.updates = rs.getString("Updates");
+                    if (this.updates == null)
+                        throw new NullPointerException(); 
                     jLabel3.setText(this.updates);
                 }
                 catch (NullPointerException e){ 
-                    jLabel3.setText("No updates for now!"); 
+                    this.updates = "No new updates!"; 
+                    jLabel3.setText(this.updates);  
                 }
                 
                 jTextArea1.append("Name: " + this.name + "\n");   
